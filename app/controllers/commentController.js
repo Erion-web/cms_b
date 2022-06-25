@@ -84,8 +84,37 @@ const deleteComment = async (req, res) => {
     });
   }
 };
+const getReplies = async (req, res) => {
+  try {
+    const replies = await commentService.getReplies(req.params.id);
+    if (!replies) {
+      return res.status(401).json({
+        success: false,
+        errors: {
+          msg: "No replies found",
+        },
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        msg: "Success!",
+        replies,
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      success: false,
+      errors: {
+        msg: "Something went wrong!",
+      },
+    });
+  }
+};
 
 module.exports = {
   update,
   deleteComment,
+  getReplies,
 };

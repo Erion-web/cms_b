@@ -5,13 +5,14 @@ const create = async (data) => {
     user: data.userId,
     post: data.postId,
     comment: data.comment,
+    parentCommentId: data.parentCommentId,
   }).save();
 };
 
 const getCommentsPerPost = async (postId) => {
   return await Comment.find({
     post: postId,
-  }).select({ comment: 1 });
+  }).select({ comment: 1, parentCommentId: 1 });
 };
 
 const update = async (id, data) => {
@@ -53,10 +54,21 @@ const checkIfUserIsAuth = async (user, id) => {
     }))
   );
 };
+
+const checkIfCommentExist = async (id, postId) => {
+  return await Comment.findOne({ _id: id, post: postId });
+};
+
+const getReplies = async (id) => {
+  return await Comment.find({ parentCommentId: id });
+};
+
 module.exports = {
   create,
   getCommentsPerPost,
   update,
   deleteComment,
   checkIfUserIsAuth,
+  checkIfCommentExist,
+  getReplies,
 };

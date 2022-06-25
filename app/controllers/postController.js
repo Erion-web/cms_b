@@ -15,6 +15,7 @@ const all = async (req, res) => {
       },
     });
   } catch (e) {
+    console.log(e);
     return res.status(500).json({
       success: false,
       errors: {
@@ -79,6 +80,7 @@ const update = async (req, res) => {
       },
     });
   }
+
   try {
     const { post } = await postService.update(req.params.id, req.body);
 
@@ -123,6 +125,40 @@ const comment = async (req, res) => {
     });
   } catch (e) {
     console.log(e);
+    return res.status(500).json({
+      success: false,
+      errors: {
+        msg: "Something went wrong!",
+      },
+    });
+  }
+};
+
+const commentReply = async (req, res) => {
+  try {
+    const { post } = await postService.commentReply({
+      id: req.user.id,
+      slug: req.params.slug,
+      commentId: req.params.commentId,
+      ...req.body,
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        post,
+      },
+    });
+  } catch (e) {
+    if (e.message === "Comment not found!") {
+      return res.status(404).json({
+        success: false,
+        errors: {
+          msg: e.message,
+        },
+      });
+    }
+
     return res.status(500).json({
       success: false,
       errors: {
@@ -239,4 +275,5 @@ module.exports = {
   update,
   deletePost,
   comment,
+  commentReply,
 };

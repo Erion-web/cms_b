@@ -75,6 +75,25 @@ const comment = async (data) => {
   };
 };
 
+const commentReply = async (data) => {
+  const post = await Post.findOne({ slug: data.slug });
+
+  if (!(await commentService.checkIfCommentExists(data.commentId, post.id))) {
+    throw new Error("Comment not found!");
+  }
+
+  await commentService.create({
+    userId: data.id,
+    postId: post.id,
+    comment: data.comment,
+    parentCommentId: data.commentId,
+  });
+
+  return {
+    post,
+  };
+};
+
 const like = async (userId, slug) => {
   const post = await Post.findOne({ slug });
 
@@ -159,6 +178,7 @@ module.exports = {
   getBySlug,
   checkIfUserIsAuth,
   isNotAllowed,
+  commentReply,
   favorite,
   comment,
   like,
